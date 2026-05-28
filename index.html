@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rate Flux — Compare Premium Products Globally</title>
+
+<!-- OG Tags -->
+<meta property="og:title" content="Rate Flux — Compare Premium Products Globally" />
+<meta property="og:description" content="Ultra-fast price comparisons across major retailers. See which retailer is cheaper right now." />
+<meta property="og:image" content="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200&h=630&fit=crop&q=80" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<!-- Fontshare Fonts -->
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --font-satoshi: 'Satoshi', sans-serif;
+  --font-general-sans: 'General Sans', sans-serif;
+}
+
+/* Dark Mode (Default) */
+html[data-theme="dark"] {
+  --bg:#0d0b09;
+  --surface:#141210;
+  --surface2:#1a1816;
+  --surface3:#211f1c;
+  --border:#2e2b27;
+  --border2:#3a3733;
+  --text:#e8e5e0;
+  --muted:#9a9590;
+  --faint:#5a5752;
+  --gold:#f5a623;
+  --gold-dim:#c47f10;
+  --gold-glow:rgba(245,166,35,0.15);
+  --amazon:#ff9900;
+  --flipkart:#2874f0;
+  --green:#4caf7d;
+  --red:#e05c5c;
+  --radius:10px;
+  --radius-lg:16px;
+}
+
+/* Light Mode */
+html[data-theme="light"] {
+  --bg:#f8f9fa;
+  --surface:#ffffff;
+  --surface2:#f1f3f5;
+  --surface3:#e9ecef;
+  --border:#dee2e6;
+  --border2:#ced4da;
+  --text:#212529;
+  --muted:#6c757d;
+  --faint:#adb5bd;
+  --gold:#d97706;
+  --gold-dim:#b45309;
+  --gold-glow:rgba(217, 119, 6, 0.15);
+  --amazon:#ea580c;
+  --flipkart:#0284c7;
+  --green:#16a34a;
+  --red:#dc2626;
+}
+
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font-satoshi);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden; transition: background 0.3s, color 0.3s;}
+
+h1, h2, h3, h4, h5, h6 {font-family: var(--font-general-sans);}
+
+/* ── NAV ── */
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;background:var(--bg);opacity:0.95;backdrop-filter:blur(12px)}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--font-general-sans);font-weight:800;font-size:1.2rem;letter-spacing:-0.02em}
+.logo svg{flex-shrink:0; color:var(--gold)}
+.logo span{color:var(--gold)}
+.nav-badge{background:var(--gold-glow);border:1px solid var(--gold-dim);color:var(--gold);font-size:0.65rem;padding:2px 8px;border-radius:999px;font-weight:600;letter-spacing:0.05em}
+
+.nav-actions {display: flex; align-items: center; gap: 12px;}
+.currency-select {background: var(--surface2); color: var(--text); border: 1px solid var(--border2); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-family: var(--font-satoshi); cursor: pointer; outline: none;}
+.theme-toggle {background: transparent; color: var(--text); border: 1px solid var(--border); padding: 6px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;}
+.theme-toggle:hover {background: var(--surface2);}
+
+/* ── HERO ── */
+.hero{text-align:center;padding:72px 20px 40px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(245,166,35,0.06) 0%,transparent 70%);pointer-events:none}
+h1{font-size:clamp(2.5rem,6vw,4.5rem);font-weight:900;line-height:1.1;letter-spacing:-0.04em;margin-bottom:12px}
+h1 span{color:var(--gold)}
+.hero-sub{color:var(--muted);font-size:1rem;max-width:480px;margin:0 auto 36px;line-height:1.6}
+
+/* ── SEARCH BAR ── */
+.search-wrap{max-width:600px;margin:0 auto 16px;position:relative}
+.search-bar{display:flex;align-items:center;background:var(--surface2);border:1.5px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;transition:border-color 0.2s,box-shadow 0.2s}
+.search-bar:focus-within{border-color:var(--gold-dim);box-shadow:0 0 0 3px var(--gold-glow)}
+.search-icon{padding:0 14px;color:var(--faint);flex-shrink:0}
+#searchInput{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:1rem;padding:14px 0;font-family:var(--font-satoshi)}
+#searchInput::placeholder{color:var(--faint)}
+.search-btn{background:var(--gold);color:#0d0b09;border:none;padding:10px 22px;margin:6px;border-radius:10px;font-weight:700;font-size:0.9rem;cursor:pointer;white-space:nowrap;transition:background 0.2s,transform 0.1s;font-family:var(--font-satoshi)}
+.search-btn:hover{background:#f8b830}
+.search-btn:active{transform:scale(0.97)}
+
+/* Search History */
+.search-history {display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px; min-height: 24px;}
+.history-chip {background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-size: 0.75rem; padding: 4px 10px; border-radius: 999px; cursor: pointer; transition: all 0.2s;}
+.history-chip:hover {background: var(--surface3); color: var(--text); border-color: var(--border2);}
+
+/* ── SUGGESTIONS ── */
+.suggestions{position:absolute;top:100%;left:0;right:0;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);margin-top:4px;overflow:hidden;z-index:50;display:none}
+.suggestions.show{display:block}
+.suggestion-item{padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:0.9rem;transition:background 0.15s}
+.suggestion-item:hover{background:var(--surface3)}
+.suggestion-item svg{color:var(--faint);flex-shrink:0}
+
+/* ── LEADERBOARD ── */
+.leaderboard{max-width:1000px;margin:0 auto 52px;padding:0 20px}
+.lb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.lb-title{display:flex;align-items:center;gap:8px;font-size:0.8rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase}
+.lb-title svg{color:var(--gold)}
+.lb-refresh{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:6px;font-size:0.75rem;cursor:pointer;transition:all 0.2s;font-family:var(--font-satoshi)}
+.lb-refresh:hover{border-color:var(--gold-dim);color:var(--gold)}
+.lb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.lb-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,0.03)}
+.lb-card:hover{border-color:var(--gold-dim);background:var(--surface2);transform:translateY(-2px)}
+.lb-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:7px;margin-bottom:8px;background:var(--surface2);border:1px solid rgba(255,255,255,0.05)}
+.lb-name{font-size:0.72rem;font-weight:600;line-height:1.3;margin-bottom:6px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-price{font-size:1rem;font-weight:700;color:var(--gold);letter-spacing:-0.02em;line-height:1;font-variant-numeric:tabular-nums}
+.lb-store{font-size:0.65rem;color:var(--muted);margin-top:2px}
+
+/* ── DIVIDER ── */
+.divider{max-width:1000px;margin:0 auto 40px;padding:0 20px;display:flex;align-items:center;gap:16px}
+.divider-line{flex:1;height:1px;background:var(--border)}
+.divider-text{color:var(--faint);font-size:0.75rem;letter-spacing:0.08em;white-space:nowrap}
+
+/* ── RESULTS AREA ── */
+.results-area{max-width:1000px;margin:0 auto;padding:0 20px 60px}
+
+.view-toggles {display: flex; gap: 8px; margin-bottom: 20px; justify-content: flex-end;}
+.view-btn {background: var(--surface); border: 1px solid var(--border); color: var(--muted); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;}
+.view-btn.active {background: var(--surface2); border-color: var(--border2); color: var(--text);}
+
+/* Columns View */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:640px){.cols{grid-template-columns:1fr}}
+.col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.col-brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:0.95rem}
+
+/* Table View */
+.table-view {width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border);}
+.table-view th {text-align: left; padding: 12px 16px; background: var(--surface2); color: var(--muted); font-size: 0.75rem; text-transform: uppercase; font-weight: 600; border-bottom: 1px solid var(--border);}
+.table-view td {padding: 16px; border-bottom: 1px solid var(--border); color: var(--text); font-size: 0.9rem; vertical-align: middle;}
+.table-view tr:last-child td {border-bottom: none;}
+
+.product-link-card {text-decoration: none; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); padding: 16px; margin-bottom: 12px; display: flex; gap: 16px; transition: transform 0.2s, border-color 0.2s; cursor: pointer; color: inherit; position: relative;}
+.product-link-card:hover {transform: translateY(-2px); border-color: var(--border2); background: var(--surface2);}
+
+/* State: loading */
+.skeleton {background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px;}
+@keyframes shimmer {0% {background-position: 200% 0;} 100% {background-position: -200% 0;}}
+
+.skel-card {background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; display: flex; gap: 16px; margin-bottom: 12px;}
+.skel-img {width: 80px; height: 80px; border-radius: 6px;}
+.skel-line {height: 16px; margin-bottom: 8px; width: 70%;}
+.skel-line.short {width: 40%;}
+
+/* Badges */
+.badge-best {position: absolute; top: -10px; right: 10px; background: var(--green); color: #fff; font-size: 0.65rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
+.btn-alert {background: transparent; border: 1px solid var(--border2); color: var(--text); font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s;}
+.btn-alert:hover {background: var(--surface2); border-color: var(--gold); color: var(--gold);}
+
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+.modal-content {
+  background: var(--surface); border: 1px solid var(--border2);
+  padding: 32px; border-radius: var(--radius-lg); width: 90%; max-width: 400px;
+  transform: translateY(20px); transition: transform 0.3s;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+.modal-overlay.active .modal-content { transform: translateY(0); }
+.modal-title { font-size: 1.25rem; font-weight: 800; font-family: var(--font-general-sans); margin-bottom: 8px; }
+.modal-desc { font-size: 0.85rem; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+.modal-input {
+  width: 100%; padding: 12px 16px; border-radius: 8px;
+  border: 1.5px solid var(--border2); background: var(--surface2); color: var(--text);
+  font-family: var(--font-satoshi); margin-bottom: 20px; outline: none; transition: border-color 0.2s;
+}
+.modal-input:focus { border-color: var(--gold); }
+.modal-actions { display: flex; gap: 12px; justify-content: flex-end; }
+.btn-cancel {
+  padding: 10px 16px; border: 1px solid var(--border); background: transparent;
+  color: var(--text); border-radius: 8px; cursor: pointer; font-family: var(--font-satoshi); transition: background 0.2s;
+}
+.btn-cancel:hover { background: var(--surface2); }
+.btn-save {
+  padding: 10px 16px; border: none; background: var(--gold);
+  color: #0d0b09; border-radius: 8px; font-weight: 700; cursor: pointer; font-family: var(--font-satoshi); transition: background 0.2s;
+}
+.btn-save:hover { background: #f8b830; }
+
+</style>
+
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    Rate<span>Flux</span>
+    <div class="nav-badge">BETA</div>
+  </div>
+  <div class="nav-actions">
+    <select id="currencySelect" class="currency-select" onchange="changeCurrency(this.value)">
+      <option value="INR">₹ INR</option>
+      <option value="USD">$ USD</option>
+      <option value="EUR">€ EUR</option>
+      <option value="GBP">£ GBP</option>
+    </select>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Theme">
+      <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>Compare premium<br><span>products globally.</span></h1>
+  <p class="hero-sub">See which retailer is cheaper — right now, for any product.</p>
+
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <div class="search-bar">
+      <span class="search-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </span>
+      <input id="searchInput" type="text" placeholder="Search product (e.g. airbuds, laptop, smartwatch…)" autocomplete="off"/>
+      <button class="search-btn" onclick="triggerSearch()">Compare Prices</button>
+    </div>
+    <div class="suggestions" id="suggestions"></div>
+  </div>
+  
+  <div class="search-history" id="searchHistory"></div>
+</section>
+
+<!-- LEADERBOARD -->
+<section class="leaderboard">
+  <div class="lb-header">
+    <div class="lb-title">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Today's Best Deals
+    </div>
+    <button class="lb-refresh" onclick="shuffleLeaderboard()">↻ Refresh Picks</button>
+  </div>
+  <div class="lb-grid" id="lbGrid"></div>
+</section>
+
+<div class="divider">
+  <div class="divider-line"></div>
+  <div class="divider-text">OR SEARCH ABOVE TO COMPARE</div>
+  <div class="divider-line"></div>
+</div>
+
+<!-- RESULTS -->
+<section class="results-area" id="resultsArea">
+</section>
+
+
+<!-- Alert Modal -->
+<div class="modal-overlay" id="alertModal">
+  <div class="modal-content">
+    <div class="modal-title">Set Price Alert</div>
+    <div class="modal-desc">Enter your email to receive an instant notification when the price drops.</div>
+    <input type="email" class="modal-input" id="alertEmail" placeholder="your@email.com" />
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAlertModal()">Cancel</button>
+      <button class="btn-save" onclick="saveAlert()">Save Alert</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+const PRODUCTS = [
+  // ─── AUDIO (4) ───
+  {
+    id: 1, category: "audio", keywords: ["airbuds","earbuds","audio","sony","apple","headphone","wf","buds"],
+    name: "Sony WF-1000XM5 Wireless Earbuds",
+    image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 19990, url: "#", label: "128GB · Noise Cancelling", reviews: 4.5, count: 1204 },
+    flipkart: { price: 21499, url: "#", label: "True Wireless · 36hr battery", reviews: 4.4, count: 940 },
+  },
+  {
+    id: 2, category: "audio", keywords: ["airbuds","earbuds","apple","airpods","audio","buds"],
+    name: "Apple AirPods Pro (2nd Gen)",
+    image: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 22900, url: "#", label: "ANC · Transparency Mode", reviews: 4.8, count: 5432 },
+    flipkart: { price: 23999, url: "#", label: "H2 Chip · 30hr battery", reviews: 4.7, count: 4321 },
+  },
+  {
+    id: 3, category: "audio", keywords: ["headphone","over-ear","audio","bose","noise","cancelling"],
+    name: "Bose QuietComfort 45 Headphones",
+    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 28500, url: "#", label: "Over-Ear ANC · 24hr", reviews: 4.6, count: 2100 },
+    flipkart: { price: 31900, url: "#", label: "Bose Music App", reviews: 4.5, count: 1800 },
+  },
+  {
+    id: 4, category: "audio", keywords: ["earbuds","nothing","audio","buds","cme","nothing ear"],
+    name: "Nothing Ear (2) TWS Earbuds",
+    image: "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 8299, url: "#", label: "Hi-Res Audio · 36hr", reviews: 4.3, count: 850 },
+    flipkart: { price: 8499, url: "#", label: "LHDC 5.0 Codec", reviews: 4.2, count: 720 },
+  },
+
+  // ─── SMARTPHONES (6) ───
+  {
+    id: 5, category: "smartphone", keywords: ["iphone","phone","smartphone","apple","15","mobile"],
+    name: "Apple iPhone 15 (128GB)",
+    image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 69999, url: "#", label: "128GB · A16 Bionic", reviews: 4.7, count: 14500 },
+    flipkart: { price: 72990, url: "#", label: "Dynamic Island", reviews: 4.8, count: 12000 },
+  },
+  {
+    id: 19, category: "smartphone", keywords: ["iphone","phone","smartphone","apple","15","mobile"],
+    name: "Apple iPhone 15 (256GB)",
+    image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 79999, url: "#", label: "256GB · A16 Bionic", reviews: 4.8, count: 3200 },
+    flipkart: { price: 82990, url: "#", label: "Dynamic Island", reviews: 4.7, count: 2800 },
+  },
+  {
+    id: 20, category: "smartphone", keywords: ["iphone","phone","smartphone","apple","15","pro","mobile"],
+    name: "Apple iPhone 15 Pro (256GB)",
+    image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 129999, url: "#", label: "Titanium · A17 Pro", reviews: 4.9, count: 8900 },
+    flipkart: { price: 134900, url: "#", label: "Action Button", reviews: 4.8, count: 7600 },
+  },
+  {
+    id: 6, category: "smartphone", keywords: ["samsung","galaxy","phone","s24","mobile","smartphone","android"],
+    name: "Samsung Galaxy S24 (256GB)",
+    image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 74999, url: "#", label: "256GB · Snap 8 Gen 3", reviews: 4.6, count: 4500 },
+    flipkart: { price: 76990, url: "#", label: "Galaxy AI · 50MP", reviews: 4.5, count: 3900 },
+  },
+  {
+    id: 7, category: "smartphone", keywords: ["oneplus","phone","12","mobile","smartphone","android","oneplus 12"],
+    name: "OnePlus 12 (256GB)",
+    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 64999, url: "#", label: "Snapdragon 8 Gen 3 · 100W", reviews: 4.7, count: 5600 },
+    flipkart: { price: 63999, url: "#", label: "Hasselblad Camera", reviews: 4.6, count: 4800 },
+  },
+  {
+    id: 8, category: "smartphone", keywords: ["pixel","google","phone","8","mobile","smartphone","android"],
+    name: "Google Pixel 8a (128GB)",
+    image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 52999, url: "#", label: "Tensor G3 · 64MP Camera", reviews: 4.4, count: 1200 },
+    flipkart: { price: 54999, url: "#", label: "7yr Security Updates", reviews: 4.3, count: 980 },
+  },
+
+  // ─── LAPTOPS (3) ───
+  {
+    id: 9, category: "laptop", keywords: ["laptop","macbook","apple","notebook","computer","m3"],
+    name: "Apple MacBook Air M3 (8GB/256GB)",
+    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 114900, url: "#", label: "M3 Chip · 18hr Battery", reviews: 4.9, count: 3400 },
+    flipkart: { price: 118990, url: "#", label: "15.3-inch Retina", reviews: 4.8, count: 2900 },
+  },
+  {
+    id: 10, category: "laptop", keywords: ["laptop","dell","xps","notebook","windows","computer"],
+    name: "Dell XPS 15 (Core i7, 16GB)",
+    image: "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 124990, url: "#", label: "i7-13700H · RTX 4060", reviews: 4.5, count: 850 },
+    flipkart: { price: 129900, url: "#", label: "15.6\" OLED · 512GB SSD", reviews: 4.4, count: 720 },
+  },
+  {
+    id: 11, category: "laptop", keywords: ["laptop","gaming","asus","rog","notebook","computer","gaming laptop"],
+    name: "ASUS ROG Zephyrus G14 (RTX 4060)",
+    image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 109990, url: "#", label: "Ryzen 9 · RTX 4060 · 16GB", reviews: 4.7, count: 1100 },
+    flipkart: { price: 114990, url: "#", label: "165Hz · 2K Display", reviews: 4.6, count: 950 },
+  },
+
+  // ─── SMARTWATCH (3) ───
+  {
+    id: 12, category: "smartwatch", keywords: ["smartwatch","watch","apple watch","series","9","wearable"],
+    name: "Apple Watch Series 9 (GPS, 41mm)",
+    image: "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 41900, url: "#", label: "S9 SiP · Double Tap", reviews: 4.8, count: 4200 },
+    flipkart: { price: 43999, url: "#", label: "Always-On Retina", reviews: 4.7, count: 3800 },
+  },
+  {
+    id: 13, category: "smartwatch", keywords: ["smartwatch","samsung","galaxy","watch","6","wearable"],
+    name: "Samsung Galaxy Watch 6 Classic (47mm)",
+    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 34999, url: "#", label: "Rotating Bezel · BioActive", reviews: 4.6, count: 2100 },
+    flipkart: { price: 36999, url: "#", label: "Sleep Coaching · 4G", reviews: 4.5, count: 1800 },
+  },
+  {
+    id: 14, category: "smartwatch", keywords: ["smartwatch","fitbit","google","sense","fitness","wearable","health"],
+    name: "Fitbit Sense 2 Smartwatch",
+    image: "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 18999, url: "#", label: "ECG · Stress Management", reviews: 4.2, count: 950 },
+    flipkart: { price: 20499, url: "#", label: "6-day battery · GPS", reviews: 4.1, count: 820 },
+  },
+
+  // ─── GAMING (2) ───
+  {
+    id: 15, category: "gaming", keywords: ["gaming","mouse","razer","logitech","g pro","gaming mouse","peripheral"],
+    name: "Logitech G Pro X Superlight 2",
+    image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 14990, url: "#", label: "HERO 25K · 60hr Battery", reviews: 4.8, count: 3200 },
+    flipkart: { price: 15990, url: "#", label: "Ultralight 60g", reviews: 4.7, count: 2900 },
+  },
+  {
+    id: 16, category: "gaming", keywords: ["gaming","controller","ps5","playstation","dualsense","gamepad"],
+    name: "Sony DualSense Wireless Controller",
+    image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 5999, url: "#", label: "Haptic Feedback · PS5", reviews: 4.9, count: 18500 },
+    flipkart: { price: 6499, url: "#", label: "Adaptive Triggers", reviews: 4.8, count: 15200 },
+  },
+
+  // ─── CAMERAS (2) ───
+  {
+    id: 17, category: "camera", keywords: ["camera","sony","a7","mirrorless","dslr","photography","full frame"],
+    name: "Sony Alpha A7 IV Mirrorless Camera",
+    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 229990, url: "#", label: "33MP Full-Frame · 4K 60fps", reviews: 4.9, count: 840 },
+    flipkart: { price: 239990, url: "#", label: "Body Only · 5-axis IBIS", reviews: 4.8, count: 710 },
+  },
+  {
+    id: 18, category: "camera", keywords: ["camera","gopro","action","hero","12","action camera","sport"],
+    name: "GoPro HERO12 Black Action Camera",
+    image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 36990, url: "#", label: "5.3K · HyperSmooth 6.0", reviews: 4.7, count: 2100 },
+    flipkart: { price: 38990, url: "#", label: "Waterproof 10m", reviews: 4.6, count: 1850 },
+  },
+];
+
+const CATEGORIES = {
+  audio: { label: "🎧 Audio", count: 4 },
+  smartphone: { label: "📱 Smartphones", count: 4 },
+  laptop: { label: "💻 Laptops", count: 3 },
+  smartwatch: { label: "⌚ Smartwatches", count: 3 },
+  gaming: { label: "🎮 Gaming", count: 2 },
+  camera: { label: "📷 Cameras", count: 2 },
+};
+
+const SUGGESTIONS = [
+  "Sony WF-1000XM5","Apple AirPods Pro","Bose Headphones",
+  "iPhone 15","Samsung Galaxy S24","OnePlus 12","Google Pixel 8a",
+  "MacBook Air M3","Dell XPS 15","ASUS ROG Gaming Laptop",
+  "Apple Watch Series 9","Samsung Galaxy Watch 6",
+  "Logitech G Pro Mouse","Sony DualSense","Sony A7 IV Camera","GoPro HERO12"
+];
+
+let currentCurrency = "INR";
+const rates = {
+  INR: { rate: 1, symbol: "₹" },
+  USD: { rate: 0.012, symbol: "$" },
+  EUR: { rate: 0.011, symbol: "€" },
+  GBP: { rate: 0.0094, symbol: "£" },
+};
+
+let viewMode = "cols"; // 'cols' or 'table'
+let currentMatches = [];
+
+// ════════════════════════════════
+//  THEME & CURRENCY
+// ════════════════════════════════
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  
+  const icon = document.getElementById('themeIcon');
+  if(isDark) {
+    // Moon
+    icon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`;
+  } else {
+    // Sun
+    icon.innerHTML = `<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>`;
+  }
+}
+
+function changeCurrency(cur) {
+  currentCurrency = cur;
+  shuffleLeaderboard();
+  if (currentMatches.length > 0) {
+    renderResults(document.getElementById('searchInput').value, currentMatches);
+  }
+}
+
+function formatPrice(inrPrice) {
+  const converted = inrPrice * rates[currentCurrency].rate;
+  const config = currentCurrency === "INR" ? { style: 'currency', currency: 'INR', maximumFractionDigits: 0 } 
+                : { style: 'currency', currency: currentCurrency };
+  return new Intl.NumberFormat('en-US', config).format(converted);
+}
+
+// ════════════════════════════════
+//  SEARCH HISTORY
+// ════════════════════════════════
+function loadHistory() {
+  const hist = JSON.parse(sessionStorage.getItem('rf_history') || '[]');
+  const cont = document.getElementById('searchHistory');
+  if(!hist.length) { cont.innerHTML = ''; return; }
+  
+  cont.innerHTML = `<span style="font-size:0.75rem;color:var(--muted);align-self:center;margin-right:4px;">Recent:</span>` + 
+    hist.map(h => `<div class="history-chip" onclick="searchByName('${h}')">${h}</div>`).join('');
+}
+
+function addHistory(query) {
+  let hist = JSON.parse(sessionStorage.getItem('rf_history') || '[]');
+  hist = hist.filter(h => h.toLowerCase() !== query.toLowerCase());
+  hist.unshift(query);
+  if(hist.length > 4) hist.pop();
+  sessionStorage.setItem('rf_history', JSON.stringify(hist));
+  loadHistory();
+}
+
+loadHistory();
+
+const lowestPrice = (p) => Math.min(p.amazon.price, p.flipkart.price);
+const bestStore = (p) => p.amazon.price <= p.flipkart.price ? "amazon" : "flipkart";
+
+// ════════════════════════════════
+//  LEADERBOARD
+// ════════════════════════════════
+function shuffleLeaderboard() {
+  const shuffled = [...PRODUCTS].sort(() => Math.random() - 0.5).slice(0, 8);
+  const grid = document.getElementById("lbGrid");
+  grid.innerHTML = shuffled.map(p => {
+    const low = lowestPrice(p);
+    const store = bestStore(p);
+    return `
+      <div class="lb-card" onclick="searchByName('${p.name.split(" ").slice(0,3).join(" ")}')">
+        <div style="position:absolute;top:8px;right:8px;background:var(--green);color:#fff;font-size:0.58rem;font-weight:700;padding:2px 6px;border-radius:4px;z-index:1;">${store === "amazon" ? "Amazon" : "Flipkart"}</div>
+        <img class="lb-img" src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/150';">
+        <div class="lb-name">${p.name}</div>
+        <div class="lb-price">${formatPrice(low)}</div>
+        <div class="lb-store">${CATEGORIES[p.category].label}</div>
+      </div>`;
+  }).join("");
+}
+
+shuffleLeaderboard();
+
+// ════════════════════════════════
+//  SEARCH LOGIC
+// ════════════════════════════════
+const searchInput = document.getElementById("searchInput");
+const suggestionsEl = document.getElementById("suggestions");
+
+searchInput.addEventListener("input", () => {
+  const q = searchInput.value.trim().toLowerCase();
+  if (q.length < 2) { suggestionsEl.classList.remove("show"); return; }
+  const hits = SUGGESTIONS.filter(s => s.toLowerCase().includes(q)).slice(0, 5);
+  if (!hits.length) { suggestionsEl.classList.remove("show"); return; }
+  suggestionsEl.innerHTML = hits.map(s =>
+    `<div class="suggestion-item" onclick="searchByName('${s}')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      ${s}
+    </div>`).join("");
+  suggestionsEl.classList.add("show");
+});
+
+document.addEventListener("click", e => {
+  if (!e.target.closest(".search-wrap")) suggestionsEl.classList.remove("show");
+});
+
+searchInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") triggerSearch();
+});
+
+function searchByName(name) {
+  searchInput.value = name;
+  suggestionsEl.classList.remove("show");
+  triggerSearch();
+}
+
+function triggerSearch() {
+  const raw = searchInput.value.trim().toLowerCase();
+  if (!raw) return;
+  suggestionsEl.classList.remove("show");
+  
+  addHistory(searchInput.value.trim());
+
+  document.querySelector(".leaderboard").style.display = "none";
+  document.querySelector(".divider").style.display = "none";
+
+  const area = document.getElementById("resultsArea");
+  
+  // Show Skeletons
+  area.innerHTML = `
+    <div class="cols" style="margin-top: 20px;">
+      <div>
+        <div class="skel-card"><div class="skel-img skeleton"></div><div style="flex:1"><div class="skel-line skeleton"></div><div class="skel-line short skeleton"></div></div></div>
+        <div class="skel-card"><div class="skel-img skeleton"></div><div style="flex:1"><div class="skel-line skeleton"></div><div class="skel-line short skeleton"></div></div></div>
+      </div>
+      <div>
+        <div class="skel-card"><div class="skel-img skeleton"></div><div style="flex:1"><div class="skel-line skeleton"></div><div class="skel-line short skeleton"></div></div></div>
+        <div class="skel-card"><div class="skel-img skeleton"></div><div style="flex:1"><div class="skel-line skeleton"></div><div class="skel-line short skeleton"></div></div></div>
+      </div>
+    </div>
+  `;
+
+  // Smarter match
+  const matches = PRODUCTS.filter(p => {
+    if (raw.length < 3) {
+      return p.keywords.some(k => k === raw || k.startsWith(raw)) ||
+             p.name.toLowerCase().split(/[\s,()]+/).some(w => w === raw || w.startsWith(raw)) ||
+             p.category === raw;
+    }
+    return p.keywords.some(k => raw.includes(k) || k.includes(raw)) ||
+           p.name.toLowerCase().includes(raw) ||
+           p.category.includes(raw);
+  });
+
+  currentMatches = matches;
+
+  // Fake network delay for UX
+  setTimeout(() => {
+    renderResults(raw, matches);
+  }, 1200);
+}
+
+function setViewMode(mode) {
+  viewMode = mode;
+  renderResults(document.getElementById('searchInput').value, currentMatches);
+}
+
+
+function handlePriceAlert(e) {
+  if(e) e.preventDefault();
+  const modal = document.getElementById('alertModal');
+  modal.classList.add('active');
+  document.getElementById('alertEmail').focus();
+}
+
+function closeAlertModal() {
+  document.getElementById('alertModal').classList.remove('active');
+  document.getElementById('alertEmail').value = '';
+}
+
+
+function saveAlert() {
+  const email = document.getElementById('alertEmail').value;
+  if(email && email.includes('@')) {
+    const modalContent = document.querySelector('.modal-content');
+    modalContent.innerHTML = `
+      <div style="text-align:center; padding: 20px 0;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" style="margin-bottom:16px;">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <div class="modal-title">Alert Set Successfully</div>
+        <div class="modal-desc" style="margin-bottom:24px;">We'll notify <strong>${email}</strong> when the price drops.</div>
+        <button class="btn-save" style="width:100%;" onclick="resetAndCloseModal()">Done</button>
+      </div>
+    `;
+  } else {
+    // Show error inline instead of native alert
+    let err = document.getElementById('alertError');
+    if(!err) {
+      err = document.createElement('div');
+      err.id = 'alertError';
+      err.style.color = 'var(--red)';
+      err.style.fontSize = '0.75rem';
+      err.style.marginTop = '-12px';
+      err.style.marginBottom = '12px';
+      document.querySelector('.modal-actions').parentNode.insertBefore(err, document.querySelector('.modal-actions'));
+    }
+    err.innerText = 'Please enter a valid email address.';
+  }
+}
+
+function resetAndCloseModal() {
+  const modal = document.getElementById('alertModal');
+  modal.classList.remove('active');
+  
+  // Reset modal content after animation
+  setTimeout(() => {
+    document.querySelector('.modal-content').innerHTML = `
+      <div class="modal-title">Set Price Alert</div>
+      <div class="modal-desc">Enter your email to receive an instant notification when the price drops.</div>
+      <input type="email" class="modal-input" id="alertEmail" placeholder="your@email.com" />
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeAlertModal()">Cancel</button>
+        <button class="btn-save" onclick="saveAlert()">Save Alert</button>
+      </div>
+    `;
+  }, 300);
+}
+
+
+// ════════════════════════════════
+//  RENDER RESULTS
+// ════════════════════════════════
+function renderResults(query, matches) {
+  const area = document.getElementById("resultsArea");
+
+  if (!matches.length) {
+    area.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--muted);">No products found for "${query}".</div>`;
+    return;
+  }
+
+  
+  const allPrices = matches.flatMap(p => [p.amazon.price, p.flipkart.price]);
+  const bestDeal = Math.min(...allPrices);
+  const avgPrice = Math.round(allPrices.reduce((a,b) => a+b, 0) / allPrices.length);
+  const bestProd = matches.find(p => Math.min(p.amazon.price, p.flipkart.price) === bestDeal);
+  const bestOn = bestProd ? (bestProd.amazon.price <= bestProd.flipkart.price ? "Amazon" : "Flipkart") : "";
+  
+  // Calculate average rating across all matched products on both platforms
+  const avgRating = (matches.reduce((sum, p) => sum + (p.amazon.reviews || 0) + (p.flipkart.reviews || 0), 0) / (matches.length * 2)).toFixed(1);
+
+  let htmlStr = `
+    <!-- Market Intel -->
+    <div style="background: var(--surface2); border: 1px solid var(--border2); padding: 24px; border-radius: 12px; margin-bottom: 32px;">
+      <div style="text-align: center; font-size: 0.9rem; font-weight: 700; margin-bottom: 20px; color: var(--text); font-family: var(--font-general-sans);">Market Intelligence</div>
+      <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 200px; background: rgba(76, 175, 125, 0.05); border: 1px solid rgba(76, 175, 125, 0.2); border-radius: 8px; padding: 20px; text-align: center; display: flex; flex-direction: column; justify-content: center;">
+          <div style="font-size: 0.7rem; color: var(--muted); margin-bottom: 8px; letter-spacing: 0.05em;">BEST DEAL FOUND</div>
+          <div style="font-size: 1.6rem; font-weight: 800; color: var(--text);">${formatPrice(bestDeal)} <span style="font-size: 0.8rem; font-weight: 500; color: var(--gold);">on ${bestOn}</span></div>
+        </div>
+        <div style="flex: 1; min-width: 200px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; text-align: center; display: flex; flex-direction: column; justify-content: center;">
+          <div style="font-size: 0.7rem; color: var(--muted); margin-bottom: 8px; letter-spacing: 0.05em;">AVERAGE MARKET RATE</div>
+          <div style="font-size: 1.6rem; font-weight: 800; color: var(--text);">${formatPrice(avgPrice)}</div>
+        </div>
+        <div style="flex: 1; min-width: 200px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; text-align: center; display: flex; flex-direction: column; justify-content: center;">
+          <div style="font-size: 0.7rem; color: var(--muted); margin-bottom: 8px; letter-spacing: 0.05em;">CATEGORY RATING</div>
+          <div style="font-size: 1.6rem; font-weight: 800; color: var(--text); display:flex; align-items:center; justify-content:center; gap:6px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            ${avgRating}
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="view-toggles">
+      <button class="view-btn ${viewMode==='cols'?'active':''}" onclick="setViewMode('cols')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/></svg> Columns
+      </button>
+      <button class="view-btn ${viewMode==='table'?'active':''}" onclick="setViewMode('table')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg> Table
+      </button>
+    </div>
+  `;
+
+  if (viewMode === "cols") {
+    htmlStr += `<div class="cols">${renderCols(matches)}</div>`;
+  } else {
+    htmlStr += renderTable(matches);
+  }
+
+  area.innerHTML = htmlStr;
+}
+
+function renderCols(matches) {
+  const sorted = [...matches];
+  const allPrices = matches.flatMap(p => [p.amazon.price, p.flipkart.price]);
+  const globalMin = Math.min(...allPrices);
+
+  const buildCol = (storeName, color, matches, storeKey) => {
+    return `
+      <div>
+        <div class="col-header">
+          <div class="col-brand" style="color: var(--${storeName.toLowerCase()})">${storeName}</div>
+        </div>
+        ${matches.map(p => {
+          const pData = p[storeKey];
+          const isBest = pData.price <= (globalMin * 1.05); // Within 5% of global minimum
+          return `
+          <div class="product-link-card">
+            ${isBest ? `<div class="badge-best">Near Lowest Price!</div>` : ''}
+            <div style="width: 80px; height: 80px; background: #fff; border-radius: 6px; padding: 4px; flex-shrink: 0;">
+              <img src="${p.image}" alt="${p.name}" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='https://via.placeholder.com/150';">
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column;">
+              <div style="font-size: 0.85rem; font-weight: 500; margin-bottom: 4px;">${p.name}</div>
+
+              <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 8px;">${pData.label}</div>
+              <div style="display:flex; align-items:center; gap: 4px; font-size: 0.75rem; color: var(--muted); margin-bottom: 6px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <span style="font-weight:600; color:var(--text);">${pData.reviews || 0}</span> (${pData.count || 0})
+              </div>
+              <div style="font-size: 1.2rem; font-weight: 800;">${formatPrice(pData.price)}</div>
+              <div style="display:flex; gap: 8px; margin-top: auto; padding-top: 10px;">
+                <a href="${pData.url !== '#' ? pData.url : (storeKey === 'amazon' ? 'https://www.amazon.in/s?k='+encodeURIComponent(p.name) : 'https://www.flipkart.com/search?q='+encodeURIComponent(p.name))}" target="_blank" style="flex:1; text-align:center; background: var(--surface2); color: var(--text); border: 1px solid var(--border); padding: 4px 0; border-radius: 4px; text-decoration:none; font-size:0.75rem;">Track</a>
+                <button class="btn-alert" onclick="handlePriceAlert(event)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> Alert</button>
+              </div>
+            </div>
+          </div>
+        `}).join('')}
+      </div>
+    `;
+  };
+
+  return buildCol("Amazon", "amazon", sorted, "amazon") + buildCol("Flipkart", "flipkart", sorted, "flipkart");
+}
+
+function renderTable(matches) {
+  const allPrices = matches.flatMap(p => [p.amazon.price, p.flipkart.price]);
+  const globalMin = Math.min(...allPrices);
+
+  let rows = matches.map(p => {
+    const aPrice = formatPrice(p.amazon.price);
+    const fPrice = formatPrice(p.flipkart.price);
+    const low = lowestPrice(p);
+    let bestUrl = (p.amazon.price <= p.flipkart.price) ? p.amazon.url : p.flipkart.url;
+    if (bestUrl === '#') {
+      bestUrl = (p.amazon.price <= p.flipkart.price) ? 'https://www.amazon.in/s?k='+encodeURIComponent(p.name) : 'https://www.flipkart.com/search?q='+encodeURIComponent(p.name);
+    }
+    
+    return `
+      <tr>
+        <td style="display:flex; align-items:center; gap:12px;">
+          <img src="${p.image}" width="40" height="40" style="border-radius:4px; background:#fff; object-fit:contain;" onerror="this.onerror=null; this.src='https://via.placeholder.com/150';">
+          <span style="font-weight:500;">${p.name}</span>
+        </td>
+
+        <td style="font-weight: ${p.amazon.price === low ? '800; color:var(--green)' : '500'}">
+          ${aPrice} <br><span style="font-size:0.7rem; color:var(--muted); font-weight:400;">${p.amazon.label}</span>
+          <br><span style="font-size:0.7rem; color:var(--gold); font-weight:600;">★ ${p.amazon.reviews}</span>
+        </td>
+        <td style="font-weight: ${p.flipkart.price === low ? '800; color:var(--green)' : '500'}">
+          ${fPrice} <br><span style="font-size:0.7rem; color:var(--muted); font-weight:400;">${p.flipkart.label}</span>
+          <br><span style="font-size:0.7rem; color:var(--gold); font-weight:600;">★ ${p.flipkart.reviews}</span>
+        </td>
+        <td style="display:flex; gap:8px; align-items:center;">
+          <a href="${bestUrl !== '#' ? bestUrl : '#'}" target="_blank" style="text-decoration:none; color:var(--text); font-size:0.75rem; background:var(--surface2); padding:6px 12px; border-radius:6px; border:1px solid var(--border);">Track</a>
+          <button class="btn-alert" onclick="handlePriceAlert(event)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Alert</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  return `
+    <div style="overflow-x:auto;">
+      <table class="table-view">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th style="color:var(--amazon)">Amazon</th>
+            <th style="color:var(--flipkart)">Flipkart</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>
