@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rate Flux — Compare Premium Products Globally</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0b09;
+  --surface:#141210;
+  --surface2:#1a1816;
+  --surface3:#211f1c;
+  --border:#2e2b27;
+  --border2:#3a3733;
+  --text:#e8e5e0;
+  --muted:#9a9590;
+  --faint:#5a5752;
+  --gold:#f5a623;
+  --gold-dim:#c47f10;
+  --gold-glow:rgba(245,166,35,0.15);
+  --amazon:#ff9900;
+  --flipkart:#2874f0;
+  --green:#4caf7d;
+  --red:#e05c5c;
+  --radius:10px;
+  --radius-lg:16px;
+  --shadow:0 4px 20px rgba(0,0,0,0.5);
+}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── NAV ── */
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;background:rgba(13,11,9,0.92);backdrop-filter:blur(12px)}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;letter-spacing:-0.02em}
+.logo svg{flex-shrink:0}
+.logo span{color:var(--gold)}
+.nav-badge{background:var(--gold-glow);border:1px solid var(--gold-dim);color:var(--gold);font-size:0.65rem;padding:2px 8px;border-radius:999px;font-weight:600;letter-spacing:0.05em}
+
+/* ── HERO ── */
+.hero{text-align:center;padding:72px 20px 40px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(245,166,35,0.06) 0%,transparent 70%);pointer-events:none}
+.hero-label{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border2);border-radius:999px;padding:5px 14px;font-size:0.72rem;color:var(--muted);margin-bottom:24px;letter-spacing:0.04em}
+.hero-label::before{content:'';width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+h1{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;line-height:1.1;letter-spacing:-0.03em;margin-bottom:12px}
+h1 span{color:var(--gold)}
+.hero-sub{color:var(--muted);font-size:1rem;max-width:480px;margin:0 auto 36px;line-height:1.6}
+
+/* ── SEARCH BAR ── */
+.search-wrap{max-width:600px;margin:0 auto 16px;position:relative}
+.search-bar{display:flex;align-items:center;background:var(--surface2);border:1.5px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;transition:border-color 0.2s,box-shadow 0.2s}
+.search-bar:focus-within{border-color:var(--gold-dim);box-shadow:0 0 0 3px var(--gold-glow)}
+.search-icon{padding:0 14px;color:var(--faint);flex-shrink:0}
+#searchInput{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:1rem;padding:14px 0;font-family:'Inter',sans-serif}
+#searchInput::placeholder{color:var(--faint)}
+.search-btn{background:var(--gold);color:#0d0b09;border:none;padding:10px 22px;margin:6px;border-radius:10px;font-weight:700;font-size:0.9rem;cursor:pointer;white-space:nowrap;transition:background 0.2s,transform 0.1s;font-family:'Inter',sans-serif}
+.search-btn:hover{background:#f8b830}
+.search-btn:active{transform:scale(0.97)}
+
+/* ── SUGGESTIONS ── */
+.suggestions{position:absolute;top:100%;left:0;right:0;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);margin-top:4px;overflow:hidden;z-index:50;display:none}
+.suggestions.show{display:block}
+.suggestion-item{padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:0.9rem;transition:background 0.15s}
+.suggestion-item:hover{background:var(--surface3)}
+.suggestion-item svg{color:var(--faint);flex-shrink:0}
+
+/* ── LEADERBOARD ── */
+.leaderboard{max-width:1000px;margin:0 auto 52px;padding:0 20px}
+.lb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.lb-title{display:flex;align-items:center;gap:8px;font-size:0.8rem;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase}
+.lb-title svg{color:var(--gold)}
+.lb-refresh{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:6px;font-size:0.75rem;cursor:pointer;transition:all 0.2s;font-family:'Inter',sans-serif}
+.lb-refresh:hover{border-color:var(--gold-dim);color:var(--gold)}
+.lb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.lb-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,0.03)}
+.lb-card:hover{border-color:var(--gold-dim);background:var(--surface2);transform:translateY(-2px)}
+.lb-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--gold-glow),transparent);opacity:0;transition:opacity 0.25s}
+.lb-card:hover::after{opacity:1}
+.lb-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:7px;margin-bottom:8px;background:var(--surface2);border:1px solid rgba(255,255,255,0.05)}
+.lb-name{font-size:0.72rem;font-weight:600;line-height:1.3;margin-bottom:6px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-price{font-size:1rem;font-weight:600;color:var(--gold);font-family:'Inter',sans-serif;letter-spacing:-0.02em;line-height:1;font-variant-numeric:tabular-nums}
+.lb-store{font-size:0.65rem;color:var(--muted);margin-top:2px}
+.lb-badge{position:absolute;top:8px;right:8px;background:var(--green);color:#0d1f14;font-size:0.58rem;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:0.04em;z-index:1}
+
+/* ── DIVIDER ── */
+.divider{max-width:1000px;margin:0 auto 40px;padding:0 20px;display:flex;align-items:center;gap:16px}
+.divider-line{flex:1;height:1px;background:var(--border)}
+.divider-text{color:var(--faint);font-size:0.75rem;letter-spacing:0.08em;white-space:nowrap}
+
+/* ── RESULTS AREA ── */
+.results-area{max-width:1000px;margin:0 auto;padding:0 20px 60px}
+
+/* Filters bar */
+.filters-bar{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 18px;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.filters-left{display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--muted)}
+.filters-left svg{color:var(--gold)}
+.filter-select{background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:5px 10px;border-radius:6px;font-size:0.78rem;outline:none;font-family:'Inter',sans-serif;cursor:pointer}
+.sort-btns{display:flex;align-items:center;gap:4px}
+.sort-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:6px;font-size:0.75rem;cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif}
+.sort-btn.active,.sort-btn:hover{background:var(--gold-glow);border-color:var(--gold-dim);color:var(--gold)}
+
+/* Market Intelligence */
+.market-intel{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:20px;margin-bottom:24px}
+.mi-title{font-size:0.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:16px;text-align:center}
+.mi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.mi-item{background:var(--surface);padding:14px;text-align:center}
+.mi-item:first-child{border-radius:var(--radius) 0 0 var(--radius)}
+.mi-item:last-child{border-radius:0 var(--radius) var(--radius) 0}
+.mi-label{font-size:0.65rem;color:var(--faint);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px}
+.mi-val{font-size:1.2rem;font-weight:600;font-family:'Inter',sans-serif;color:var(--text);letter-spacing:-0.03em;font-variant-numeric:tabular-nums}
+.mi-sub{font-size:0.72rem;color:var(--green);margin-top:2px}
+.mi-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+
+/* Columns */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:640px){.cols{grid-template-columns:1fr}}
+.col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.col-brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:0.95rem}
+.refresh-col{background:none;border:none;color:var(--faint);cursor:pointer;transition:color 0.2s}
+.refresh-col:hover{color:var(--gold)}
+
+/* Product card */
+.product-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:10px;transition:all 0.2s;cursor:pointer;position:relative}
+.product-card:hover{border-color:var(--border2);background:var(--surface2)}
+.product-card.best{border-color:var(--gold-dim);background:rgba(245,166,35,0.04)}
+.prod-img{width:60px;height:60px;object-fit:cover;border-radius:8px;background:var(--surface2);flex-shrink:0;border:1px solid var(--border)}
+.prod-info{flex:1;min-width:0}
+.prod-name{font-size:0.83rem;font-weight:500;line-height:1.35;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.prod-price{font-size:1.08rem;font-weight:600;font-family:'Inter',sans-serif;color:var(--text);letter-spacing:-0.025em;line-height:1.2;font-variant-numeric:tabular-nums}
+.prod-links{display:flex;gap:6px;margin-top:6px}
+.prod-link{font-size:0.68rem;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:2px 8px;border-radius:4px;text-decoration:none;transition:all 0.15s;cursor:pointer}
+.prod-link:hover{color:var(--gold);border-color:var(--gold-dim)}
+.prod-best-badge{background:var(--gold);color:#0d0b09;font-size:0.58rem;font-weight:700;padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:middle;letter-spacing:0.04em}
+.no-results{text-align:center;padding:48px 20px;color:var(--muted)}
+.no-results svg{margin:0 auto 12px;opacity:0.3}
+
+/* Stats bar */
+.stats-bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:40px}
+.stat-pill{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:6px 16px;font-size:0.75rem;display:flex;align-items:center;gap:6px}
+.stat-pill span:first-child{color:var(--muted)}
+.stat-pill strong{color:var(--text);font-family:'Syne',sans-serif}
+
+.price-sym{font-size:0.74em;font-weight:400;opacity:0.6;margin-right:1px;vertical-align:middle}
+/* State: loading */
+.loading-skeleton{animation:shimmer 1.5s ease-in-out infinite}
+@keyframes shimmer{0%{opacity:0.5}50%{opacity:1}100%{opacity:0.5}}
+
+/* Welcome state */
+.welcome{text-align:center;padding:48px 20px;color:var(--muted)}
+.welcome svg{margin:0 auto 16px;opacity:0.2}
+.welcome h3{color:var(--text);margin-bottom:8px;font-size:1.1rem}
+
+/* Tooltip */
+.tooltip{position:relative;display:inline-block}
+.tooltip .tip{position:absolute;bottom:110%;left:50%;transform:translateX(-50%);background:var(--surface3);border:1px solid var(--border2);color:var(--text);font-size:0.7rem;padding:4px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.15s;z-index:200}
+.tooltip:hover .tip{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <rect width="28" height="28" rx="7" fill="#f5a623" opacity="0.12"/>
+      <path d="M6 20 L10 12 L14 16 L18 8 L22 14" stroke="#f5a623" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="22" cy="14" r="2.5" fill="#f5a623"/>
+    </svg>
+    Rate<span>Flux</span>
+  </div>
+  <div class="nav-badge">⚡ Ultra Fast Redis Cache Engine</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-label">
+    <span></span> LIVE PRICE COMPARISON ENGINE — DEMO MODE
+  </div>
+  <h1>Compare premium<br><span>products globally.</span></h1>
+  <p class="hero-sub">Search any product and instantly compare prices across Amazon & Flipkart with real-time market intelligence.</p>
+
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <div class="search-bar">
+      <span class="search-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </span>
+      <input id="searchInput" type="text" placeholder="Search product (e.g. airbuds, laptop, smartwatch…)" autocomplete="off"/>
+      <button class="search-btn" onclick="doSearch()">Compare Prices</button>
+    </div>
+    <div class="suggestions" id="suggestions"></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar" id="statsBar">
+  <div class="stat-pill"><span>Products Indexed</span><strong>18</strong></div>
+  <div class="stat-pill"><span>Categories</span><strong>6</strong></div>
+  <div class="stat-pill"><span>Retailers</span><strong>2</strong></div>
+  <div class="stat-pill"><span>Best Deal</span><strong style='color:var(--green)'>Up to 48% off</strong></div>
+</div>
+
+<!-- LEADERBOARD -->
+<section class="leaderboard">
+  <div class="lb-header">
+    <div class="lb-title">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Today's Best Deals — Lowest Prices
+    </div>
+    <button class="lb-refresh" onclick="shuffleLeaderboard()">↻ Refresh Picks</button>
+  </div>
+  <div class="lb-grid" id="lbGrid"></div>
+</section>
+
+<div class="divider">
+  <div class="divider-line"></div>
+  <div class="divider-text">OR SEARCH ABOVE TO COMPARE ANY PRODUCT</div>
+  <div class="divider-line"></div>
+</div>
+
+<!-- RESULTS -->
+<section class="results-area" id="resultsArea">
+  <div class="welcome">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <h3>Search to Compare</h3>
+    <p>Try "laptop", "smartwatch", "airbuds", "iphone", "gaming mouse"…</p>
+  </div>
+</section>
+
+<script>
+// ════════════════════════════════
+//  STATIC PRODUCT DATABASE — 18 products, 6 categories
+// ════════════════════════════════
+const PRODUCTS = [
+  // ─── AUDIO (4) ───
+  {
+    id: 1, category: "audio", keywords: ["airbuds","earbuds","audio","sony","apple","headphone","wf","buds"],
+    name: "Sony WF-1000XM5 Wireless Earbuds",
+    image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 19990, url: "#", label: "128GB · Noise Cancelling" },
+    flipkart: { price: 21499, url: "#", label: "True Wireless · 36hr battery" },
+  },
+  {
+    id: 2, category: "audio", keywords: ["airbuds","earbuds","apple","airpods","audio","buds"],
+    name: "Apple AirPods Pro (2nd Gen)",
+    image: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 22900, url: "#", label: "ANC · Transparency Mode" },
+    flipkart: { price: 23999, url: "#", label: "H2 Chip · 30hr battery" },
+  },
+  {
+    id: 3, category: "audio", keywords: ["headphone","over-ear","audio","bose","noise","cancelling"],
+    name: "Bose QuietComfort 45 Headphones",
+    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 28500, url: "#", label: "Over-Ear ANC · 24hr" },
+    flipkart: { price: 31900, url: "#", label: "Bose Music App" },
+  },
+  {
+    id: 4, category: "audio", keywords: ["earbuds","nothing","audio","buds","cme","nothing ear"],
+    name: "Nothing Ear (2) TWS Earbuds",
+    image: "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 8299, url: "#", label: "Hi-Res Audio · 36hr" },
+    flipkart: { price: 8499, url: "#", label: "LHDC 5.0 Codec" },
+  },
+
+  // ─── SMARTPHONES (4) ───
+  {
+    id: 5, category: "smartphone", keywords: ["iphone","phone","smartphone","apple","15","mobile"],
+    name: "Apple iPhone 15 (128GB)",
+    image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 69999, url: "#", label: "128GB · A16 Bionic" },
+    flipkart: { price: 72990, url: "#", label: "Dynamic Island" },
+  },
+  {
+    id: 6, category: "smartphone", keywords: ["samsung","galaxy","phone","s24","mobile","smartphone","android"],
+    name: "Samsung Galaxy S24 (256GB)",
+    image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 74999, url: "#", label: "256GB · Snapdragon 8 Gen 3" },
+    flipkart: { price: 76990, url: "#", label: "Galaxy AI · 50MP" },
+  },
+  {
+    id: 7, category: "smartphone", keywords: ["oneplus","phone","12","mobile","smartphone","android","oneplus 12"],
+    name: "OnePlus 12 (256GB)",
+    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 64999, url: "#", label: "Snapdragon 8 Gen 3 · 100W" },
+    flipkart: { price: 63999, url: "#", label: "Hasselblad Camera" },
+  },
+  {
+    id: 8, category: "smartphone", keywords: ["pixel","google","phone","8","mobile","smartphone","android"],
+    name: "Google Pixel 8a (128GB)",
+    image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 52999, url: "#", label: "Tensor G3 · 64MP Camera" },
+    flipkart: { price: 54999, url: "#", label: "7yr Security Updates" },
+  },
+
+  // ─── LAPTOPS (3) ───
+  {
+    id: 9, category: "laptop", keywords: ["laptop","macbook","apple","notebook","computer","m3"],
+    name: "Apple MacBook Air M3 (8GB/256GB)",
+    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 114900, url: "#", label: "M3 Chip · 18hr Battery" },
+    flipkart: { price: 118990, url: "#", label: "15.3-inch Retina" },
+  },
+  {
+    id: 10, category: "laptop", keywords: ["laptop","dell","xps","notebook","windows","computer"],
+    name: "Dell XPS 15 (Core i7, 16GB)",
+    image: "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 124990, url: "#", label: "i7-13700H · RTX 4060" },
+    flipkart: { price: 129900, url: "#", label: "15.6\" OLED · 512GB SSD" },
+  },
+  {
+    id: 11, category: "laptop", keywords: ["laptop","gaming","asus","rog","notebook","computer","gaming laptop"],
+    name: "ASUS ROG Zephyrus G14 (RTX 4060)",
+    image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 109990, url: "#", label: "Ryzen 9 · RTX 4060 · 16GB" },
+    flipkart: { price: 114990, url: "#", label: "165Hz · 2K Display" },
+  },
+
+  // ─── SMARTWATCH (3) ───
+  {
+    id: 12, category: "smartwatch", keywords: ["smartwatch","watch","apple watch","series","9","wearable"],
+    name: "Apple Watch Series 9 (GPS, 41mm)",
+    image: "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 41900, url: "#", label: "S9 SiP · Double Tap" },
+    flipkart: { price: 43999, url: "#", label: "Always-On Retina" },
+  },
+  {
+    id: 13, category: "smartwatch", keywords: ["smartwatch","samsung","galaxy","watch","6","wearable"],
+    name: "Samsung Galaxy Watch 6 Classic (47mm)",
+    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 34999, url: "#", label: "Rotating Bezel · BioActive" },
+    flipkart: { price: 36999, url: "#", label: "Sleep Coaching · 4G" },
+  },
+  {
+    id: 14, category: "smartwatch", keywords: ["smartwatch","fitbit","google","sense","fitness","wearable","health"],
+    name: "Fitbit Sense 2 Smartwatch",
+    image: "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 18999, url: "#", label: "ECG · Stress Management" },
+    flipkart: { price: 20499, url: "#", label: "6-day battery · GPS" },
+  },
+
+  // ─── GAMING (2) ───
+  {
+    id: 15, category: "gaming", keywords: ["gaming","mouse","razer","logitech","g pro","gaming mouse","peripheral"],
+    name: "Logitech G Pro X Superlight 2",
+    image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 14990, url: "#", label: "HERO 25K · 60hr Battery" },
+    flipkart: { price: 15990, url: "#", label: "Ultralight 60g" },
+  },
+  {
+    id: 16, category: "gaming", keywords: ["gaming","controller","ps5","playstation","dualsense","gamepad"],
+    name: "Sony DualSense Wireless Controller",
+    image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 5999, url: "#", label: "Haptic Feedback · PS5" },
+    flipkart: { price: 6499, url: "#", label: "Adaptive Triggers" },
+  },
+
+  // ─── CAMERAS (2) ───
+  {
+    id: 17, category: "camera", keywords: ["camera","sony","a7","mirrorless","dslr","photography","full frame"],
+    name: "Sony Alpha A7 IV Mirrorless Camera",
+    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 229990, url: "#", label: "33MP Full-Frame · 4K 60fps" },
+    flipkart: { price: 239990, url: "#", label: "Body Only · 5-axis IBIS" },
+  },
+  {
+    id: 18, category: "camera", keywords: ["camera","gopro","action","hero","12","action camera","sport"],
+    name: "GoPro HERO12 Black Action Camera",
+    image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=200&h=200&fit=crop&q=80",
+    amazon: { price: 36990, url: "#", label: "5.3K · HyperSmooth 6.0" },
+    flipkart: { price: 38990, url: "#", label: "Waterproof 10m" },
+  },
+];
+
+// ════════════════════════════════
+//  CATEGORY METADATA
+// ════════════════════════════════
+const CATEGORIES = {
+  audio: { label: "🎧 Audio", count: 4 },
+  smartphone: { label: "📱 Smartphones", count: 4 },
+  laptop: { label: "💻 Laptops", count: 3 },
+  smartwatch: { label: "⌚ Smartwatches", count: 3 },
+  gaming: { label: "🎮 Gaming", count: 2 },
+  camera: { label: "📷 Cameras", count: 2 },
+};
+
+const fmt = (n) => "₹" + Number(n).toLocaleString("en-IN");
+const lowestPrice = (p) => Math.min(p.amazon.price, p.flipkart.price);
+const bestStore = (p) => p.amazon.price <= p.flipkart.price ? "amazon" : "flipkart";
+
+// ════════════════════════════════
+//  LEADERBOARD
+// ════════════════════════════════
+function shuffleLeaderboard() {
+  const shuffled = [...PRODUCTS].sort(() => Math.random() - 0.5).slice(0, 8);
+  renderLeaderboard(shuffled);
+}
+
+function renderLeaderboard(items) {
+  const grid = document.getElementById("lbGrid");
+  grid.innerHTML = items.map(p => {
+    const low = lowestPrice(p);
+    const store = bestStore(p);
+    return `
+      <div class="lb-card" onclick="searchByName('${p.name.split(" ").slice(0,3).join(" ")}')">
+        <div class="lb-badge">${store === "amazon" ? "Amazon" : "Flipkart"}</div>
+        <img class="lb-img" src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.src='https://picsum.photos/seed/${p.id}/200/200'">
+        <div class="lb-name">${p.name}</div>
+        <div class="lb-price"><span style="font-size:0.72em;font-weight:400;opacity:0.65;margin-right:1px">₹</span><span>${Number(low).toLocaleString("en-IN")}</span></div>
+        <div class="lb-store">${CATEGORIES[p.category].label}</div>
+      </div>`;
+  }).join("");
+}
+
+shuffleLeaderboard();
+setInterval(shuffleLeaderboard, 12000);
+
+// ════════════════════════════════
+//  SEARCH LOGIC
+// ════════════════════════════════
+const searchInput = document.getElementById("searchInput");
+const suggestionsEl = document.getElementById("suggestions");
+
+const SUGGESTIONS = [
+  "Sony WF-1000XM5","Apple AirPods Pro","Bose Headphones",
+  "iPhone 15","Samsung Galaxy S24","OnePlus 12","Google Pixel 8a",
+  "MacBook Air M3","Dell XPS 15","ASUS ROG Gaming Laptop",
+  "Apple Watch Series 9","Samsung Galaxy Watch 6",
+  "Logitech G Pro Mouse","Sony DualSense","Sony A7 IV Camera","GoPro HERO12"
+];
+
+searchInput.addEventListener("input", () => {
+  const q = searchInput.value.trim().toLowerCase();
+  if (q.length < 2) { suggestionsEl.classList.remove("show"); return; }
+  const hits = SUGGESTIONS.filter(s => s.toLowerCase().includes(q)).slice(0, 5);
+  if (!hits.length) { suggestionsEl.classList.remove("show"); return; }
+  suggestionsEl.innerHTML = hits.map(s =>
+    `<div class="suggestion-item" onclick="searchByName('${s}')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      ${s}
+    </div>`).join("");
+  suggestionsEl.classList.add("show");
+});
+
+document.addEventListener("click", e => {
+  if (!e.target.closest(".search-wrap")) suggestionsEl.classList.remove("show");
+});
+
+searchInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") doSearch();
+});
+
+function searchByName(name) {
+  searchInput.value = name;
+  suggestionsEl.classList.remove("show");
+  doSearch();
+}
+
+function doSearch() {
+  const raw = searchInput.value.trim().toLowerCase();
+  if (!raw) return;
+  suggestionsEl.classList.remove("show");
+
+  // Fuzzy match: check if any keyword matches
+  const matches = PRODUCTS.filter(p =>
+    p.keywords.some(k => raw.includes(k) || k.includes(raw)) ||
+    p.name.toLowerCase().includes(raw) ||
+    p.category.includes(raw)
+  );
+
+  renderResults(raw, matches);
+}
+
+// ════════════════════════════════
+//  RENDER RESULTS
+// ════════════════════════════════
+function renderResults(query, matches) {
+  const area = document.getElementById("resultsArea");
+
+  if (!matches.length) {
+    area.innerHTML = `
+      <div class="no-results">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <h3 style="margin-bottom:8px;color:var(--text)">No products found for "${query}"</h3>
+        <p>Try: airbuds, laptop, iphone, smartwatch, gaming mouse, camera</p>
+      </div>`;
+    return;
+  }
+
+  // Market intelligence
+  const allPrices = matches.flatMap(p => [p.amazon.price, p.flipkart.price]);
+  const bestDeal = Math.min(...allPrices);
+  const avgPrice = Math.round(allPrices.reduce((a,b) => a+b, 0) / allPrices.length);
+  const bestProd = matches.find(p => Math.min(p.amazon.price, p.flipkart.price) === bestDeal);
+  const bestOn = bestProd ? (bestProd.amazon.price <= bestProd.flipkart.price ? "Amazon" : "Flipkart") : "";
+
+  const amzProducts = matches;
+  const flipProducts = matches;
+
+  area.innerHTML = `
+    <!-- Filters -->
+    <div class="filters-bar">
+      <div class="filters-left">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+        Advanced Filters &nbsp;
+        <select class="filter-select" onchange="applySort(this.value)">
+          <option value="">All Retailers</option>
+          <option value="amazon">Amazon Only</option>
+          <option value="flipkart">Flipkart Only</option>
+        </select>
+      </div>
+      <div class="sort-btns">
+        Sort by:
+        <button class="sort-btn active" id="sb-default" onclick="sortBy('default')">Default</button>
+        <button class="sort-btn" id="sb-asc" onclick="sortBy('asc')">↑ Price</button>
+        <button class="sort-btn" id="sb-desc" onclick="sortBy('desc')">↓ Price</button>
+      </div>
+    </div>
+
+    <!-- Market Intel -->
+    <div class="market-intel">
+      <div class="mi-title">Market Intelligence</div>
+      <div class="mi-grid">
+        <div class="mi-item">
+          <div class="mi-label">Best Deal Found</div>
+          <div class="mi-val"><span style="font-size:0.7em;opacity:0.6;margin-right:1px">₹</span><span>${Number(bestDeal).toLocaleString("en-IN")}</span></div>
+          <div class="mi-sub">on ${bestOn}</div>
+        </div>
+        <div class="mi-item">
+          <div class="mi-label">Average Market Rate</div>
+          <div class="mi-val"><span style="font-size:0.7em;opacity:0.6;margin-right:1px">₹</span><span>${Number(avgPrice).toLocaleString("en-IN")}</span></div>
+        </div>
+        <div class="mi-item">
+          <div class="mi-label">Stock Availability</div>
+          <div class="mi-val" style="font-size:0.9rem;display:flex;justify-content:center;align-items:center;gap:12px;margin-top:4px">
+            <span><span class="mi-dot" style="background:var(--amazon)"></span> ${matches.length} Amazon</span>
+            <span><span class="mi-dot" style="background:var(--flipkart)"></span> ${matches.length} Flipkart</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Columns -->
+    <div class="cols" id="productCols">
+      ${renderCols(matches)}
+    </div>
+  `;
+
+  window._currentMatches = matches;
+  window._currentQuery = query;
+}
+
+function renderCols(matches) {
+  const sorted = [...matches];
+  return `
+    <div>
+      <div class="col-header">
+        <div class="col-brand">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--amazon)" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span>Amazon</span>
+        </div>
+        <button class="refresh-col" onclick="shuffleLeaderboard()" title="Refresh">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        </button>
+      </div>
+      ${sorted.map(p => {
+        const isBest = p.amazon.price < p.flipkart.price;
+        return `
+        <div class="product-card ${isBest ? 'best' : ''}">
+          <img class="prod-img" src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.src='https://picsum.photos/seed/${p.id}/80/80'">
+          <div class="prod-info">
+            <div class="prod-name">${p.name}${isBest ? '<span class="prod-best-badge">BEST DEAL</span>' : ''}</div>
+            <div class="prod-price"><span style="font-size:0.76em;font-weight:400;opacity:0.6;margin-right:1px">₹</span><span>${Number(p.amazon.price).toLocaleString("en-IN")}</span></div>
+            <div class="prod-links">
+              <span class="prod-link">↗ View on Amazon</span>
+              <span class="prod-link">${p.amazon.label}</span>
+            </div>
+          </div>
+        </div>`;
+      }).join("")}
+    </div>
+    <div>
+      <div class="col-header">
+        <div class="col-brand">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--flipkart)" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span>Flipkart</span>
+        </div>
+        <button class="refresh-col" title="Refresh">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        </button>
+      </div>
+      ${sorted.map(p => {
+        const isBest = p.flipkart.price < p.amazon.price;
+        return `
+        <div class="product-card ${isBest ? 'best' : ''}">
+          <img class="prod-img" src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.src='https://picsum.photos/seed/${p.id}/80/80'">
+          <div class="prod-info">
+            <div class="prod-name">${p.name}${isBest ? '<span class="prod-best-badge">BEST DEAL</span>' : ''}</div>
+            <div class="prod-price"><span style="font-size:0.76em;font-weight:400;opacity:0.6;margin-right:1px">₹</span><span>${Number(p.flipkart.price).toLocaleString("en-IN")}</span></div>
+            <div class="prod-links">
+              <span class="prod-link">↗ View on Flipkart</span>
+              <span class="prod-link">${p.flipkart.label}</span>
+            </div>
+          </div>
+        </div>`;
+      }).join("")}
+    </div>
+  `;
+}
+
+function sortBy(mode) {
+  document.querySelectorAll(".sort-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById("sb-"+mode).classList.add("active");
+  let sorted = [...(window._currentMatches || [])];
+  if (mode === "asc") sorted.sort((a,b) => lowestPrice(a) - lowestPrice(b));
+  if (mode === "desc") sorted.sort((a,b) => lowestPrice(b) - lowestPrice(a));
+  document.getElementById("productCols").innerHTML = renderCols(sorted);
+}
+</script>
+</body>
+</html>
