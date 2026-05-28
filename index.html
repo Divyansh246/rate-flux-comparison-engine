@@ -645,36 +645,67 @@ function closeAlertModal() {
 }
 
 
-function saveAlert() {
+
+async function saveAlert() {
   const email = document.getElementById('alertEmail').value;
+  const btn = document.querySelector('.btn-save');
+  
   if(email && email.includes('@')) {
-    const modalContent = document.querySelector('.modal-content');
-    modalContent.innerHTML = `
-      <div style="text-align:center; padding: 20px 0;">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" style="margin-bottom:16px;">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-          <polyline points="22 4 12 14.01 9 11.01"></polyline>
-        </svg>
-        <div class="modal-title">Alert Set Successfully</div>
-        <div class="modal-desc" style="margin-bottom:24px;">We'll notify <strong>${email}</strong> when the price drops.</div>
-        <button class="btn-save" style="width:100%;" onclick="resetAndCloseModal()">Done</button>
-      </div>
-    `;
-  } else {
-    // Show error inline instead of native alert
-    let err = document.getElementById('alertError');
-    if(!err) {
-      err = document.createElement('div');
-      err.id = 'alertError';
-      err.style.color = 'var(--red)';
-      err.style.fontSize = '0.75rem';
-      err.style.marginTop = '-12px';
-      err.style.marginBottom = '12px';
-      document.querySelector('.modal-actions').parentNode.insertBefore(err, document.querySelector('.modal-actions'));
+    // Show loading state
+    const originalText = btn.innerText;
+    btn.innerText = 'Sending...';
+    btn.disabled = true;
+
+    try {
+      const response = await fetch('/api/alert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        const modalContent = document.querySelector('.modal-content');
+        modalContent.innerHTML = `
+          <div style="text-align:center; padding: 20px 0;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" style="margin-bottom:16px;">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <div class="modal-title">Alert Set Successfully</div>
+            <div class="modal-desc" style="margin-bottom:24px;">We've sent a confirmation email to <strong>${email}</strong>!</div>
+            <button class="btn-save" style="width:100%;" onclick="resetAndCloseModal()">Done</button>
+          </div>
+        `;
+      } else {
+        throw new Error(data.error || 'Failed to send');
+      }
+    } catch (err) {
+      console.error(err);
+      showError(err.message || 'Error connecting to server. Is it running?');
+      btn.innerText = originalText;
+      btn.disabled = false;
     }
-    err.innerText = 'Please enter a valid email address.';
+  } else {
+    showError('Please enter a valid email address.');
   }
 }
+
+function showError(msg) {
+  let err = document.getElementById('alertError');
+  if(!err) {
+    err = document.createElement('div');
+    err.id = 'alertError';
+    err.style.color = 'var(--red)';
+    err.style.fontSize = '0.75rem';
+    err.style.marginTop = '-12px';
+    err.style.marginBottom = '12px';
+    document.querySelector('.modal-actions').parentNode.insertBefore(err, document.querySelector('.modal-actions'));
+  }
+  err.innerText = msg;
+}
+
 
 function resetAndCloseModal() {
   const modal = document.getElementById('alertModal');
